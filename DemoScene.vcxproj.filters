@@ -70,7 +70,7 @@
     <ClCompile Include="..\..\..\..\..\Tools\of_v0.11.0_vs2017_release\addons\ofxOpenCv\src\ofxCvShortImage.cpp">
       <Filter>addons\ofxOpenCv\src</Filter>
     </ClCompile>
-    <ClCompile Include="FlowParticle.cpp">
+    <ClCompile Include="src\FlowParticle.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1313,7 +1313,7 @@
     <ClInclude Include="..\..\..\..\..\Tools\of_v0.11.0_vs2017_release\addons\ofxOpenCv\libs\opencv\include\opencv2\world.hpp">
       <Filter>addons\ofxOpenCv\libs\opencv\include\opencv2</Filter>
     </ClInclude>
-    <ClInclude Include="FlowParticle.h">
+    <ClInclude Include="src\FlowParticle.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
