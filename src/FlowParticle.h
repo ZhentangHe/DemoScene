@@ -14,6 +14,7 @@ public:
 	void display();
 	const bool isDead() const;
 	//TODO: get; set;
+
 private:
 	ofVec3f vel;	//velocity
 	ofVec3f acc;	//acceleration
@@ -21,6 +22,7 @@ private:
 	ofColor color;  //color
 	float speed;
 	int life;
-	//std::vector<std::shared_ptr<FlowParticle>> fpList;
+	float radius;
+	deque<ofVec3f> trail;
 
 };
