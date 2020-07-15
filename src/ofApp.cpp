@@ -7,10 +7,9 @@ void ofApp::setup() {
 	ofSetBackgroundAuto(true);
 	ofSetVerticalSync(true);
 
-	//TODO: set up cam
-
 	fpSize = 1000;
 	//TODO: set up area 
+	
 	makeFlowParticles();
 }
 
@@ -94,8 +93,8 @@ void ofApp::gotMessage(ofMessage msg){
 void ofApp::makeFlowParticles() {
 	while (fpList.size() < fpSize) {
 		auto pos = ofVec3f(
-			ofRandom(-round(ofGetWidth()), round(ofGetWidth())),
-			ofRandom(-round(ofGetHeight()), round(ofGetHeight())), 
+			ofRandom(-300, 300),
+			ofRandom(-300, 300),
 			ofRandom(-300, 300)
 		);
 		fpList.push_back(std::make_shared<FlowParticle>(pos));

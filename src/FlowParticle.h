@@ -10,7 +10,8 @@ public:
 	~FlowParticle();
 
 	void update();
-	bool checkEdge();
+	void move();
+	void checkEdge();
 	void display();
 	const bool isDead() const;
 	//TODO: get; set;

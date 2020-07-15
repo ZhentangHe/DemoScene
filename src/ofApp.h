@@ -28,7 +28,7 @@ private:
 	std::vector<std::shared_ptr<FlowParticle>> fpList;
 	int fpSize;
 	of3dPrimitive area;
-
+	
 	void makeFlowParticles();
 	
 };
