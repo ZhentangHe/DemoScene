@@ -73,6 +73,9 @@
     <ClCompile Include="src\FlowParticle.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\DemoManager.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
@@ -1314,6 +1317,9 @@
       <Filter>addons\ofxOpenCv\libs\opencv\include\opencv2</Filter>
     </ClInclude>
     <ClInclude Include="src\FlowParticle.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DemoManager.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

@@ -25,5 +25,7 @@ private:
 	int life;
 	float radius;
 	deque<ofVec3f> trail;
+	const size_t trailMaxSize = 60;
+	vector<ofColor> trailColors;
 
 };

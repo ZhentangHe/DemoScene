@@ -1,13 +1,30 @@
 #include "FlowParticle.h"
 
+const ofColor palette[] = {
+	ofColor::green,
+	ofColor::forestGreen,
+	ofColor::lime,
+	ofColor::limeGreen,
+	ofColor::lightGreen,
+	ofColor::paleGreen,
+	ofColor::darkSeaGreen,
+	ofColor::mediumSpringGreen,
+	ofColor::lightSeaGreen,
+	ofColor::cyan
+};
+
 FlowParticle::FlowParticle(const ofVec3f& initPos) {
 	life = ofGetFrameRate() * 100;
 	speed = 2;
 	radius = 2;
-	color = ofColor(ofRandom(255), ofRandom(255), ofRandom(255));
+	color = ofColor::pink;//palette[(int)ofRandom(10)];
 	pos = initPos;
 	acc = ofVec3f::zero();
 	vel = ofVec3f::zero();
+	auto compColor = ofColor(255 - color.r, 255 - color.g, 255 - color.b);
+	for (size_t i = 0; i < trailMaxSize; i++) {
+		trailColors.push_back(color.lerp(compColor, (float)i / trailMaxSize));
+	}
 }
 
 FlowParticle::~FlowParticle() {
@@ -18,7 +35,7 @@ void FlowParticle::update() {
 	move();
 	checkEdge();
 	trail.push_front(pos);
-	while (trail.size() > 60) {
+	while (trail.size() > trailMaxSize) {
 		trail.pop_back();
 	}
 	life--;
@@ -32,7 +49,7 @@ void FlowParticle::move() {
 		ofGetElapsedTimeMillis() / 10000.
 	);
 	float rad = ofDegToRad(deg);
-	acc.set(cos(rad), sin(rad), (cos(rad) + sin(rad))/2.);
+	acc.set(cos(rad), sin(rad), (cos(rad) + sin(rad)) / 2.);
 	vel += acc;
 	vel = vel.normalize() * speed;
 	pos += vel;
@@ -72,7 +89,8 @@ void FlowParticle::display() {
 	ofSetColor(color);
 	ofDrawSphere(pos, radius);
 	for (size_t i = 0; i < trail.size() - 1; i++) {
-		ofSetColor(color, ofMap(i, 0, trail.size() - 1, 255, 0));
+		//ofSetColor(color, ofMap(i, 0, trail.size() - 1, 255, 0));
+		ofSetColor(trailColors[i]);
 		ofDrawLine(trail[i], trail[i + 1]);
 	}
 	//TODO:draw trail
@@ -85,4 +103,3 @@ const bool FlowParticle::isDead() const {
 		return true;
 	return false;
 }
-

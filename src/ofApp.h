@@ -1,9 +1,10 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxAssimpModelLoader.h"
 #include "FlowParticle.h"
 
-class ofApp : public ofBaseApp{
+class ofApp : public ofBaseApp {
 
 public:
 	void setup();
@@ -24,11 +25,13 @@ public:
 
 private:
 	ofEasyCam cam;
+	ofLight light;
+	ofxAssimpModelLoader brainModel;
 
 	std::vector<std::shared_ptr<FlowParticle>> fpList;
 	int fpSize;
 	of3dPrimitive area;
-	
+
 	void makeFlowParticles();
-	
+
 };
