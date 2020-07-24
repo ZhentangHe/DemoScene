@@ -28,6 +28,7 @@ private:
 	ofLight light;
 	ofxAssimpModelLoader brainModel;
 
+	ofShader fpShader;
 	std::vector<std::shared_ptr<FlowParticle>> fpList;
 	int fpSize;
 	of3dPrimitive area;

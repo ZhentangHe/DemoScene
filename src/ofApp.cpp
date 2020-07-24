@@ -2,12 +2,16 @@
 
 //--------------------------------------------------------------
 void ofApp::setup() {
+	const unsigned char* glVer = glGetString(GL_VERSION);
+	cout << glVer << endl; // DO NOT PUT A DEREFERENCE OPERATOR infront of glVer
+
 	ofSetFrameRate(60);
 	ofBackground(ofColor::black);
 	ofSetBackgroundAuto(true);
 	ofSetVerticalSync(true);
 	ofSetLineWidth(2);
 
+	fpShader.load("FlowField");
 	fpSize = 1000;
 	//TODO: set up area
 
@@ -51,9 +55,11 @@ void ofApp::draw() {
 	brainModel.drawFaces();
 	ofPopMatrix();
 
+	fpShader.begin();
 	for (auto& fp : fpList) {
 		fp->display();
 	}
+	fpShader.end();
 	ofDisableDepthTest();
 	cam.end();
 	light.disable();

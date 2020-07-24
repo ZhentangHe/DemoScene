@@ -15,6 +15,7 @@ private:
     of3dPrimitive area;
 
     //Flow Field Scene
+    ofShader fpShader;
     std::vector<std::shared_ptr<FlowParticle>> fpList;
     const int fpSize = 1000;
 
