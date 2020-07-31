@@ -2,6 +2,7 @@
 
 //--------------------------------------------------------------
 void ofApp::setup() {
+
 	const unsigned char* glVer = glGetString(GL_VERSION);
 	cout << glVer << endl; // DO NOT PUT A DEREFERENCE OPERATOR infront of glVer
 
@@ -9,26 +10,74 @@ void ofApp::setup() {
 	ofBackground(ofColor::black);
 	ofSetBackgroundAuto(true);
 	ofSetVerticalSync(true);
-	ofSetLineWidth(2);
+	ofEnableDepthTest();
 
+#ifdef DS_FLOWFIELD
 	fpShader.load("FlowField");
 	fpSize = 1000;
 	//TODO: set up area
 
 	makeFlowParticles();
+#endif // DS_FLOWFIELD
 
+#ifdef DS_BRAINGLOW
 	light.setPosition(0, 0, 300);
-	brainModel.loadModel("chip.DAE");
-	//auto mesh = brainModel.getMesh(0);
-	//const auto verCoords = mesh.getVertices();
-	//for (int i = 0; i < verCoords.size(); i++) {
-	//	cout << verCoords[i] << endl;
-	//}
-	//cout << "end vertex coords" << endl;
+
+	brainModel.loadModel("brainmesh_3000_corrected.DAE");
+	brainModel.setScale(.75, .75, .75);
+	brainModel.setPosition(75, -150, 0);
+	brainModel.setRotation(brainModel.getNumRotations(), 90, 1, 0, 0);
+	brainModel.setRotation(brainModel.getNumRotations(), -90, 0, 0, 1);
+
+	//brainShader.load("BrainGlow");
+	auto brainMesh = brainModel.getMesh(0);
+	auto brainVertices = brainMesh.getVertices();
+	decltype(brainVertices) sampledVertices{ brainVertices[0]};
+	//supported in CXX17
+	//std::sample(
+	//	brainVertices.begin(),
+	//	brainVertices.end(),
+	//	std::back_inserter(sampledVertices),
+	//	10,
+	//	std::mt19937{ std::random_device{}() }
+	//);
+
+	
+#endif // DS_BRAINGLOW
+
 }
+
+//alternative sample method
+//std::vector<int> pick(int N, int k) {
+//	std::random_device rd;
+//	std::mt19937 gen(rd());
+//
+//	std::unordered_set<int> elems = pickSet(N, k, gen);
+//
+//	// ok, now we have a set of k elements. but now
+//	// it's in a [unknown] deterministic order.
+//	// so we have to shuffle it:
+//
+//	std::vector<int> result(elems.begin(), elems.end());
+//	std::shuffle(result.begin(), result.end(), gen);
+//	return result;
+//}
+//
+//std::unordered_set<int> pickSet(int N, int k, std::mt19937& gen)
+//{
+//	std::uniform_int_distribution<> dis(1, N);
+//	std::unordered_set<int> elems;
+//
+//	while (elems.size() < k) {
+//		elems.insert(dis(gen));
+//	}
+//
+//	return elems;
+//}
 
 //--------------------------------------------------------------
 void ofApp::update() {
+#ifdef DS_FLOWFIELD
 	for (auto fp : fpList) {
 		fp->update();
 	}
@@ -40,29 +89,39 @@ void ofApp::update() {
 		),
 		fpList.end()
 	);
+#endif // DS_FLOWFIELD
+
 }
 
 //--------------------------------------------------------------
 void ofApp::draw() {
+#ifdef DS_BRAINGLOW
+	light.enable();
+	cam.begin();
+	
+	//brainModel.drawFaces();
+	brainModel.drawVertices();
+
+	cam.end();
+	light.disable();
+#endif // DS_BRAINGLOW
+
+#ifdef DS_FLOWFIELD
 	light.enable();
 	cam.begin();
 	ofEnableDepthTest();
-
-	//brainModel.setPosition(ofGetWidth() / 2, ofGetHeight() / 2, 0);
-	ofPushMatrix();
-	//brainModel.setRotation(0, 90, 0, 0, 1);
-	brainModel.setScale(1. / 5., 1. / 5., 1. / 5.);
-	brainModel.drawFaces();
-	ofPopMatrix();
 
 	fpShader.begin();
 	for (auto& fp : fpList) {
 		fp->display();
 	}
 	fpShader.end();
+
 	ofDisableDepthTest();
 	cam.end();
 	light.disable();
+#endif // DS_FLOWFIELD
+
 }
 
 //--------------------------------------------------------------

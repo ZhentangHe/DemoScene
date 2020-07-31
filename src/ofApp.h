@@ -4,6 +4,12 @@
 #include "ofxAssimpModelLoader.h"
 #include "FlowParticle.h"
 
+#include <algorithm>
+#include <random>
+#include <unordered_set>
+
+//#define DS_FLOWFIELD
+#define DS_BRAINGLOW
 class ofApp : public ofBaseApp {
 
 public:
@@ -26,7 +32,9 @@ public:
 private:
 	ofEasyCam cam;
 	ofLight light;
+
 	ofxAssimpModelLoader brainModel;
+	ofShader brainShader;
 
 	ofShader fpShader;
 	std::vector<std::shared_ptr<FlowParticle>> fpList;
@@ -34,5 +42,4 @@ private:
 	of3dPrimitive area;
 
 	void makeFlowParticles();
-
 };
