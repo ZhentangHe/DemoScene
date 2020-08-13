@@ -10,6 +10,7 @@
 
 //#define DS_FLOWFIELD
 #define DS_BRAINGLOW
+
 class ofApp : public ofBaseApp {
 
 public:
@@ -33,12 +34,15 @@ private:
 	ofEasyCam cam;
 	ofLight light;
 
+
+	int frameCounter = 0;
 	ofxAssimpModelLoader brainModel;
+	ofMesh brainMesh;
 	ofShader brainShader;
 
 	ofShader fpShader;
 	std::vector<std::shared_ptr<FlowParticle>> fpList;
-	int fpSize;
+	size_t fpSize;
 	of3dPrimitive area;
 
 	void makeFlowParticles();

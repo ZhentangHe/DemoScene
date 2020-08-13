@@ -185,6 +185,7 @@
     <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\BrainGlow.cpp" />
     <ClCompile Include="src\DemoManager.cpp" />
     <ClCompile Include="src\FlowParticle.cpp" />
     <ClCompile Include="src\main.cpp" />
@@ -212,6 +213,7 @@
     <ClCompile Include="..\..\..\..\..\Tools\of_v0.11.0_vs2017_release\addons\ofxOpenCv\src\ofxCvShortImage.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\BrainGlow.h" />
     <ClInclude Include="src\DemoManager.h" />
     <ClInclude Include="src\FlowParticle.h" />
     <ClInclude Include="src\ofApp.h" />

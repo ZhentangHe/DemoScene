@@ -14,7 +14,7 @@ void ofApp::setup() {
 
 #ifdef DS_FLOWFIELD
 	fpShader.load("FlowField");
-	fpSize = 1000;
+	fpSize = 100;
 	//TODO: set up area
 
 	makeFlowParticles();
@@ -30,9 +30,16 @@ void ofApp::setup() {
 	brainModel.setRotation(brainModel.getNumRotations(), -90, 0, 0, 1);
 
 	//brainShader.load("BrainGlow");
-	auto brainMesh = brainModel.getMesh(0);
+	
+	//brainMesh = brainModel.getMesh(0);
+	//for (auto i : brainMesh.getIndices()) {
+	//	cout << i << endl;
+	//}
+
+	cout << brainModel.getMesh(0).getNumVertices() << endl;
+	cout << brainModel.getMesh(0).getNumIndices() << endl;
 	auto brainVertices = brainMesh.getVertices();
-	decltype(brainVertices) sampledVertices{ brainVertices[0]};
+	//decltype(brainVertices) sampledVertices{ brainVertices[0]};
 	//supported in CXX17
 	//std::sample(
 	//	brainVertices.begin(),
@@ -100,7 +107,29 @@ void ofApp::draw() {
 	cam.begin();
 	
 	//brainModel.drawFaces();
-	brainModel.drawVertices();
+	//brainModel.drawVertices();
+	//brainModel.drawWireframe();
+
+	
+	brainMesh.setMode(OF_PRIMITIVE_TRIANGLES);
+	
+	ofPushMatrix();
+	ofTranslate(75, -150);
+	ofScale(5);
+	ofRotateXDeg(-90);
+	ofRotateZDeg(90);
+	//brainMesh.drawWireframe();
+
+
+	if (ofGetFrameNum() % 30 == 0) {
+		brainMesh.addVertex(brainModel.getMesh(0).getVertex(frameCounter));
+		brainMesh.addColor(ofFloatColor(ofRandom(1), ofRandom(1), ofRandom(1)));
+		ofDrawSphere(brainModel.getMesh(0).getVertex(frameCounter), 2);
+		frameCounter++;
+	}
+
+	brainMesh.drawWireframe();
+	ofPopMatrix();
 
 	cam.end();
 	light.disable();

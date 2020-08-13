@@ -76,6 +76,9 @@
     <ClCompile Include="src\DemoManager.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\BrainGlow.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
@@ -1320,6 +1323,9 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\DemoManager.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BrainGlow.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
