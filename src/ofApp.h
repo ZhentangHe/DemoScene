@@ -2,14 +2,18 @@
 
 #include "ofMain.h"
 #include "ofxAssimpModelLoader.h"
-#include "FlowParticle.h"
-
-#include <algorithm>
-#include <random>
-#include <unordered_set>
 
 //#define DS_FLOWFIELD
 #define DS_BRAINGLOW
+
+#ifdef DS_FLOWFIELD
+#include "FlowParticle.h"
+#endif // DS_FLOWFIELD
+
+#ifdef DS_BRAINGLOW
+#include "BrainGlow.h"
+#endif // DS_BRAINGLOW
+
 
 class ofApp : public ofBaseApp {
 
@@ -34,16 +38,20 @@ private:
 	ofEasyCam cam;
 	ofLight light;
 
-
+#ifdef DS_BRAINGLOW
 	int frameCounter = 0;
 	ofxAssimpModelLoader brainModel;
 	ofMesh brainMesh;
 	ofShader brainShader;
+	BrainGlow brainGlow;
+#endif // DS_BRAINGLOW
 
+#ifdef DS_FLOWFIELD
 	ofShader fpShader;
 	std::vector<std::shared_ptr<FlowParticle>> fpList;
 	size_t fpSize;
 	of3dPrimitive area;
-
 	void makeFlowParticles();
+#endif // DS_FLOWFIELD
+
 };

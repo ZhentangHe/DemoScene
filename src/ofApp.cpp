@@ -29,61 +29,40 @@ void ofApp::setup() {
 	brainModel.setRotation(brainModel.getNumRotations(), 90, 1, 0, 0);
 	brainModel.setRotation(brainModel.getNumRotations(), -90, 0, 0, 1);
 
+	brainGlow.init("brainmesh_3000_corrected.DAE");
 	//brainShader.load("BrainGlow");
-	
-	//brainMesh = brainModel.getMesh(0);
-	//for (auto i : brainMesh.getIndices()) {
-	//	cout << i << endl;
-	//}
-
-	cout << brainModel.getMesh(0).getNumVertices() << endl;
-	cout << brainModel.getMesh(0).getNumIndices() << endl;
-	auto brainVertices = brainMesh.getVertices();
-	//decltype(brainVertices) sampledVertices{ brainVertices[0]};
-	//supported in CXX17
-	//std::sample(
-	//	brainVertices.begin(),
-	//	brainVertices.end(),
-	//	std::back_inserter(sampledVertices),
-	//	10,
-	//	std::mt19937{ std::random_device{}() }
-	//);
-
-	
+	//1687 "real" vertices, 9996 overlapping vertices
+	//auto vec = brainModel.getMesh(0).getVertices();
+	//sort(vec.begin(), vec.end(), [](const glm::vec3& a, const glm::vec3& b) -> bool {
+	//	if (abs(a.x - b.x) < 0.01) {
+	//		if (abs(a.y - b.y) < 0.01) {
+	//			return a.z < b.z;
+	//		}
+	//		else
+	//			return a.y < b.y;
+	//	}
+	//	else
+	//		return a.x < b.x;
+	//	});
+	//vec.erase(unique(vec.begin(), vec.end(),
+	//	[](const glm::vec3& a, const glm::vec3& b) {
+	//		return abs(a.x - b.x) < 0.01 && abs(a.y - b.y) < 0.01 && abs(a.z - b.z) < 0.01;
+	//	}), vec.end());
+	//cout << vec.size() << endl;
 #endif // DS_BRAINGLOW
 
 }
 
-//alternative sample method
-//std::vector<int> pick(int N, int k) {
-//	std::random_device rd;
-//	std::mt19937 gen(rd());
-//
-//	std::unordered_set<int> elems = pickSet(N, k, gen);
-//
-//	// ok, now we have a set of k elements. but now
-//	// it's in a [unknown] deterministic order.
-//	// so we have to shuffle it:
-//
-//	std::vector<int> result(elems.begin(), elems.end());
-//	std::shuffle(result.begin(), result.end(), gen);
-//	return result;
-//}
-//
-//std::unordered_set<int> pickSet(int N, int k, std::mt19937& gen)
-//{
-//	std::uniform_int_distribution<> dis(1, N);
-//	std::unordered_set<int> elems;
-//
-//	while (elems.size() < k) {
-//		elems.insert(dis(gen));
-//	}
-//
-//	return elems;
-//}
-
 //--------------------------------------------------------------
 void ofApp::update() {
+#ifdef DS_BRAINGLOW
+	//float prop = ofMap(ofGetElapsedTimeMillis() % 1000, 0, 10000, 0, 1);
+	//heyPos = testMesh.getVertex(indexVertex) * prop + testMesh.getVertex(indexVertex + 1) * (1 - prop);
+	//if (prop > 1)
+	//	indexVertex++;
+#endif // DS_BRAINGLOW
+
+
 #ifdef DS_FLOWFIELD
 	for (auto fp : fpList) {
 		fp->update();
@@ -105,32 +84,21 @@ void ofApp::draw() {
 #ifdef DS_BRAINGLOW
 	light.enable();
 	cam.begin();
-	
-	//brainModel.drawFaces();
-	//brainModel.drawVertices();
-	//brainModel.drawWireframe();
-
-	
-	brainMesh.setMode(OF_PRIMITIVE_TRIANGLES);
-	
 	ofPushMatrix();
 	ofTranslate(75, -150);
 	ofScale(5);
 	ofRotateXDeg(-90);
 	ofRotateZDeg(90);
-	//brainMesh.drawWireframe();
-
-
+	//ofDrawSphere(heyPos, 5);
 	if (ofGetFrameNum() % 30 == 0) {
 		brainMesh.addVertex(brainModel.getMesh(0).getVertex(frameCounter));
+		cout << brainModel.getMesh(0).getVertex(frameCounter) << endl;
 		brainMesh.addColor(ofFloatColor(ofRandom(1), ofRandom(1), ofRandom(1)));
 		ofDrawSphere(brainModel.getMesh(0).getVertex(frameCounter), 2);
 		frameCounter++;
 	}
-
 	brainMesh.drawWireframe();
 	ofPopMatrix();
-
 	cam.end();
 	light.disable();
 #endif // DS_BRAINGLOW
@@ -203,6 +171,7 @@ void ofApp::gotMessage(ofMessage msg) {
 
 }
 
+#ifdef DS_FLOWFIELD
 void ofApp::makeFlowParticles() {
 	while (fpList.size() < fpSize) {
 		auto pos = ofVec3f(
@@ -213,6 +182,8 @@ void ofApp::makeFlowParticles() {
 		fpList.push_back(std::make_shared<FlowParticle>(pos));
 	}
 }
+
+#endif // DS_FLOWFIELD
 
 //--------------------------------------------------------------
 void ofApp::dragEvent(ofDragInfo dragInfo) {
