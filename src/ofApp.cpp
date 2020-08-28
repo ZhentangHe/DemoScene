@@ -4,7 +4,7 @@
 void ofApp::setup() {
 
 	const unsigned char* glVer = glGetString(GL_VERSION);
-	cout << glVer << endl; // DO NOT PUT A DEREFERENCE OPERATOR infront of glVer
+	cout << "OpenGL Version: "<< glVer << endl;
 
 	ofSetFrameRate(60);
 	ofBackground(ofColor::black);
@@ -22,35 +22,19 @@ void ofApp::setup() {
 
 #ifdef DS_BRAINGLOW
 	light.setPosition(0, 0, 300);
-
-	brainModel.loadModel("brainmesh_3000_corrected.DAE");
-	brainModel.setScale(.75, .75, .75);
-	brainModel.setPosition(75, -150, 0);
-	brainModel.setRotation(brainModel.getNumRotations(), 90, 1, 0, 0);
-	brainModel.setRotation(brainModel.getNumRotations(), -90, 0, 0, 1);
-
+	//cam.setAutoDistance(false);
 	brainGlow.init("brainmesh_3000_corrected.DAE");
-	//brainShader.load("BrainGlow");
-	//1687 "real" vertices, 9996 overlapping vertices
-	//auto vec = brainModel.getMesh(0).getVertices();
-	//sort(vec.begin(), vec.end(), [](const glm::vec3& a, const glm::vec3& b) -> bool {
-	//	if (abs(a.x - b.x) < 0.01) {
-	//		if (abs(a.y - b.y) < 0.01) {
-	//			return a.z < b.z;
-	//		}
-	//		else
-	//			return a.y < b.y;
-	//	}
-	//	else
-	//		return a.x < b.x;
-	//	});
-	//vec.erase(unique(vec.begin(), vec.end(),
-	//	[](const glm::vec3& a, const glm::vec3& b) {
-	//		return abs(a.x - b.x) < 0.01 && abs(a.y - b.y) < 0.01 && abs(a.z - b.z) < 0.01;
-	//	}), vec.end());
-	//cout << vec.size() << endl;
-#endif // DS_BRAINGLOW
 
+#endif // DS_BRAINGLOW
+	isShaderDirty = true;
+	humanoidModel.loadModel("brainmesh_3000_corrected.DAE");
+	humanoidModel.setScale(.25, .25, .25);
+	humanoidModel.setPosition(75, -150, 0);
+	humanoidModel.setRotation(humanoidModel.getNumRotations(), 90, 1, 0, 0);
+	humanoidModel.setRotation(humanoidModel.getNumRotations(), -90, 0, 0, 1);
+
+	humanoidMesh = humanoidModel.getMesh(0);
+	
 }
 
 //--------------------------------------------------------------
@@ -61,7 +45,17 @@ void ofApp::update() {
 	//if (prop > 1)
 	//	indexVertex++;
 #endif // DS_BRAINGLOW
+	if (isShaderDirty) {
+		ofLogNotice() << "Reloading Shader.";
+		humanoidShader = shared_ptr<ofShader>(new ofShader());
+		humanoidShader->load("instanced_120.vert", "instanced_120.frag");
+		GLint err = glGetError();
+		if (err != GL_NO_ERROR) {
+			ofLogNotice() << "Load Shader came back with GL error:	" << err;
+		}
 
+		isShaderDirty = false;
+	}
 
 #ifdef DS_FLOWFIELD
 	for (auto fp : fpList) {
@@ -90,18 +84,34 @@ void ofApp::draw() {
 	ofRotateXDeg(-90);
 	ofRotateZDeg(90);
 	//ofDrawSphere(heyPos, 5);
-	if (ofGetFrameNum() % 30 == 0) {
-		brainMesh.addVertex(brainModel.getMesh(0).getVertex(frameCounter));
-		cout << brainModel.getMesh(0).getVertex(frameCounter) << endl;
-		brainMesh.addColor(ofFloatColor(ofRandom(1), ofRandom(1), ofRandom(1)));
-		ofDrawSphere(brainModel.getMesh(0).getVertex(frameCounter), 2);
-		frameCounter++;
+	if (ofGetFrameNum() % 300 == 0 && !vecTemp.empty()) {
+		vecTemp = brainGlow.spread(vecTemp);
 	}
-	brainMesh.drawWireframe();
+	
+
+	// bind the shader
+	humanoidShader->begin();
+	// give the shader access to our texture
+	//humanoidShader->setUniformTexture("tex0", mTexDepth, 0);
+	// feed the shader a normalized float value that changes over time, to animate things a little
+	humanoidShader->setUniform1f("timeValue", (ofGetElapsedTimeMillis() % 30000) / 30000.0f);
+	// we only want to see triangles facing the camera.
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+
+	// let's draw 128 * 128 == 16384 boxes !
+	humanoidMesh.drawInstanced(OF_MESH_FILL, 12 * 12);
+
+	glDisable(GL_CULL_FACE);
+	humanoidShader->end();
+
+
+	brainGlow.getMesh().drawWireframe();
 	ofPopMatrix();
 	cam.end();
 	light.disable();
 #endif // DS_BRAINGLOW
+
 
 #ifdef DS_FLOWFIELD
 	light.enable();

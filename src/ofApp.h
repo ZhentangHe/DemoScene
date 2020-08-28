@@ -40,12 +40,14 @@ private:
 
 #ifdef DS_BRAINGLOW
 	int frameCounter = 0;
-	ofxAssimpModelLoader brainModel;
-	ofMesh brainMesh;
-	ofShader brainShader;
 	BrainGlow brainGlow;
+	vector<int> vecTemp{ 0 };
 #endif // DS_BRAINGLOW
 
+	ofxAssimpModelLoader humanoidModel;
+	ofVboMesh humanoidMesh;
+	shared_ptr<ofShader> humanoidShader;
+	bool isShaderDirty;
 #ifdef DS_FLOWFIELD
 	ofShader fpShader;
 	std::vector<std::shared_ptr<FlowParticle>> fpList;
