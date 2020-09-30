@@ -2,7 +2,6 @@
 
 //--------------------------------------------------------------
 void ofApp::setup() {
-
 	const unsigned char* glVer = glGetString(GL_VERSION);
 	cout << "OpenGL Version: "<< glVer << endl;
 
@@ -27,11 +26,7 @@ void ofApp::setup() {
 
 #endif // DS_BRAINGLOW
 	isShaderDirty = true;
-	humanoidModel.loadModel("brainmesh_3000_corrected.DAE");
-	humanoidModel.setScale(.25, .25, .25);
-	humanoidModel.setPosition(75, -150, 0);
-	humanoidModel.setRotation(humanoidModel.getNumRotations(), 90, 1, 0, 0);
-	humanoidModel.setRotation(humanoidModel.getNumRotations(), -90, 0, 0, 1);
+	humanoidModel.loadModel("Zhentang4.fbx");
 
 	humanoidMesh = humanoidModel.getMesh(0);
 	
@@ -40,6 +35,14 @@ void ofApp::setup() {
 //--------------------------------------------------------------
 void ofApp::update() {
 #ifdef DS_BRAINGLOW
+	if (ofGetFrameNum() % interval == 0 && !vecIdxSpread.empty()) {
+		vecIdxSpread = brainGlow.spread(vecIdxSpread);
+	}
+	else {
+		//haven't figure out how this works
+		float prop = (float)(ofGetFrameNum() % interval) / 30.;
+	}
+
 	//float prop = ofMap(ofGetElapsedTimeMillis() % 1000, 0, 10000, 0, 1);
 	//heyPos = testMesh.getVertex(indexVertex) * prop + testMesh.getVertex(indexVertex + 1) * (1 - prop);
 	//if (prop > 1)
@@ -48,12 +51,12 @@ void ofApp::update() {
 	if (isShaderDirty) {
 		ofLogNotice() << "Reloading Shader.";
 		humanoidShader = shared_ptr<ofShader>(new ofShader());
-		humanoidShader->load("instanced_120.vert", "instanced_120.frag");
+		humanoidShader->load("instanced");
 		GLint err = glGetError();
 		if (err != GL_NO_ERROR) {
 			ofLogNotice() << "Load Shader came back with GL error:	" << err;
 		}
-
+	
 		isShaderDirty = false;
 	}
 
@@ -80,34 +83,42 @@ void ofApp::draw() {
 	cam.begin();
 	ofPushMatrix();
 	ofTranslate(75, -150);
-	ofScale(5);
+	ofScale(7.5);
 	ofRotateXDeg(-90);
 	ofRotateZDeg(90);
-	//ofDrawSphere(heyPos, 5);
-	if (ofGetFrameNum() % 300 == 0 && !vecTemp.empty()) {
-		vecTemp = brainGlow.spread(vecTemp);
-	}
-	
-
-	// bind the shader
-	humanoidShader->begin();
-	// give the shader access to our texture
-	//humanoidShader->setUniformTexture("tex0", mTexDepth, 0);
-	// feed the shader a normalized float value that changes over time, to animate things a little
-	humanoidShader->setUniform1f("timeValue", (ofGetElapsedTimeMillis() % 30000) / 30000.0f);
-	// we only want to see triangles facing the camera.
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
-
-	// let's draw 128 * 128 == 16384 boxes !
-	humanoidMesh.drawInstanced(OF_MESH_FILL, 12 * 12);
-
-	glDisable(GL_CULL_FACE);
-	humanoidShader->end();
-
-
 	brainGlow.getMesh().drawWireframe();
 	ofPopMatrix();
+
+	humanoidShader->begin();
+	humanoidShader->setUniform4f("globalColor", 1.0, 0.4, 0.1, 1.0);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+	ofPushMatrix();
+	ofTranslate(100, -100);
+	ofScale(2.5);
+	//humanoidMesh.draw();
+	humanoidMesh.drawInstanced(OF_MESH_FILL, 12 * 12);
+	ofPopMatrix();
+	humanoidShader->end();
+
+	//// bind the shader
+	//humanoidShader->begin();
+	//// give the shader access to our texture
+	////humanoidShader->setUniformTexture("tex0", mTexDepth, 0);
+	//// feed the shader a normalized float value that changes over time, to animate things a little
+	//humanoidShader->setUniform1f("timeValue", (ofGetElapsedTimeMillis() % 30000) / 30000.0f);
+	//// we only want to see triangles facing the camera.
+	//glEnable(GL_CULL_FACE);
+	//glCullFace(GL_BACK);
+	//
+	//// let's draw 128 * 128 == 16384 boxes !
+	//humanoidMesh.drawInstanced(OF_MESH_FILL, 12 * 12);
+	//
+	//glDisable(GL_CULL_FACE);
+	//humanoidShader->end();
+
+
+
 	cam.end();
 	light.disable();
 #endif // DS_BRAINGLOW

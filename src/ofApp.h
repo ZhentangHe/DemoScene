@@ -39,9 +39,9 @@ private:
 	ofLight light;
 
 #ifdef DS_BRAINGLOW
-	int frameCounter = 0;
+	const int interval = 30;
 	BrainGlow brainGlow;
-	vector<int> vecTemp{ 0 };
+	vector<int> vecIdxSpread{ 0 };
 #endif // DS_BRAINGLOW
 
 	ofxAssimpModelLoader humanoidModel;

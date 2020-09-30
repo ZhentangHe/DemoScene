@@ -11,6 +11,7 @@ void BrainGlow::init(string modelPath) {
 
 	CGragh cGraph(brainModel.getMesh(0));
 	adjList = cGraph.getAdjList();
+	vecNum = cGraph.getVecNum();
 
 	//cGraph.connectedComponents();
 	visited.resize(cGraph.getNumVertices(), false);
@@ -20,52 +21,55 @@ void BrainGlow::init(string modelPath) {
 
 }
 
-vector<int> BrainGlow::spread(vector<int> vecIndices) {
-	vector<int> vecSpread;
-	for (auto index : vecIndices) {
-		size_t sampleSize = adjList[index].size() / 2;
-		//int sampleSize = ofRandom(min((size_t)4, adjList[index].size()));
+vector<int> BrainGlow::spread(vector<int> vecIdxForeSpread) {
+	vector<int> vecIdxPostSpread;
+	for (auto idx : vecIdxForeSpread) {
+		size_t sampleSize = adjList[idx].size() / 2;
+		//int sampleSize = ofRandom(min((size_t)4, adjList[idx].size()));
 		//if (sampleSize == 0)
 		//	sampleSize++;
-		//ofFloatColor color(ofRandom(1), ofRandom(1), ofRandom(1));
-		random_shuffle(adjList[index].begin(), adjList[index].end());
+		ofFloatColor color(ofRandom(1), ofRandom(1), ofRandom(1));
+		random_shuffle(adjList[idx].begin(), adjList[idx].end());
 		for (size_t i = 0; i < sampleSize; i++) {
-			if (!visited[adjList[index][i]]) {
-				brainMesh.addVertex(brainModel.getMesh(0).getVertex(index));
+			if (!visited[adjList[idx][i]]) {
+				brainMesh.addVertex(brainModel.getMesh(0).getVertex(vecNum[idx]));
 				//brainMesh.addColor(color);
-				brainMesh.addVertex(brainModel.getMesh(0).getVertex(adjList[index][i]));
+				int adjacent = adjList[idx][i];
+				brainMesh.addVertex(brainModel.getMesh(0).getVertex(vecNum[adjacent]));
 				//brainMesh.addColor(color);
-				visited[adjList[index][i]] = true;
-				vecSpread.push_back(adjList[index][i]);
+				visited[adjacent] = true;
+				vecIdxPostSpread.push_back(adjacent);
 			}
 		}
 	}
-	return vecSpread;
+	return vecIdxPostSpread;
 }
 
 ofMesh BrainGlow::getMesh() {
 	return brainMesh;
 }
 
-void BrainGlow::CGragh::DFSUtil(int v, bool visited[]) {
-
-	// Mark the current node as visited and print it 
-	visited[v] = true;
-	cout << v << " ";
-
-	// Recur for all the vertices 
-	// adjacent to this vertex 
-	for (auto i = adjList[v].begin(); i != adjList[v].end(); ++i)
-		if (!visited[*i])
-			DFSUtil(*i, visited);
-
-}
+//deprecated
+//void BrainGlow::CGragh::DFSUtil(int v, bool visited[]) {
+//
+//	// Mark the current node as visited and print it 
+//	visited[v] = true;
+//	cout << v << " ";
+//
+//	// Recur for all the vertices 
+//	// adjacent to this vertex 
+//	for (auto i = adjList[v].begin(); i != adjList[v].end(); ++i)
+//		if (!visited[*i])
+//			DFSUtil(*i, visited);
+//
+//}
 
 BrainGlow::CGragh::CGragh(const ofMesh& mesh) {
 
 	//get non-overlapping vertices for given mesh
 	//1687 non-overlapping vertices, 9996 overlapping vertices
-	vector<pair<int, glm::vec3>> vecVert;							 
+	vector<pair<int, glm::vec3>> vecVert;
+	vecVert.clear();
 	for (size_t i = 0; i < mesh.getNumVertices(); i++) {
 		vecVert.push_back(make_pair(i, mesh.getVertex(i)));
 	}
@@ -84,6 +88,12 @@ BrainGlow::CGragh::CGragh(const ofMesh& mesh) {
 		[](const pair<int, glm::vec3>& a, const pair<int, glm::vec3>& b) {
 			return abs(a.second.x - b.second.x) < 0.01 && abs(a.second.y - b.second.y) < 0.01 && abs(a.second.z - b.second.z) < 0.01;
 		}), vecVert.end());
+
+	// get renumbering list for vertices
+	vecNum.resize(vecVert.size());
+	for (int i = 0; i < vecVert.size(); i++) {
+		vecNum[i] = vecVert[i].first;
+	}
 
 	numVertices = vecVert.size();
 	adjList.resize(numVertices);
@@ -139,31 +149,36 @@ BrainGlow::CGragh::CGragh(const ofMesh& mesh) {
 	for (int i = 0; i < adjList.size(); i++) {
 		remove(adjList[i]);
 	}
-
 }
 
-void BrainGlow::CGragh::connectedComponents() {
-	// Mark all the vertices as not visited 
-	bool* visited = new bool[numVertices];
-	for (int v = 0; v < numVertices; v++)
-		visited[v] = false;
-
-	for (int v = 0; v < numVertices; v++)
-	{
-		if (visited[v] == false)
-		{
-			// print all reachable vertices 
-			// from v 
-			DFSUtil(v, visited);
-
-			cout << "\n\n";
-		}
-	}
-	delete[] visited;
-}
+//deprecated
+//void BrainGlow::CGragh::connectedComponents() {
+//	// Mark all the vertices as not visited 
+//	bool* visited = new bool[numVertices];
+//	for (int v = 0; v < numVertices; v++)
+//		visited[v] = false;
+//
+//	for (int v = 0; v < numVertices; v++)
+//	{
+//		if (visited[v] == false)
+//		{
+//			// print all reachable vertices 
+//			// from v 
+//			DFSUtil(v, visited);
+//
+//			cout << "\n\n";
+//		}
+//	}
+//	delete[] visited;
+//}
 
 vector<vector<int>> BrainGlow::CGragh::getAdjList() {
 	return adjList;
+}
+
+vector<int> BrainGlow::CGragh::getVecNum()
+{
+	return vecNum;
 }
 
 const int BrainGlow::CGragh::getNumVertices() {
