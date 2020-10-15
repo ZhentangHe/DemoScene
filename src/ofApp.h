@@ -41,11 +41,13 @@ private:
 #ifdef DS_BRAINGLOW
 	const int interval = 30;
 	BrainGlow brainGlow;
+	ofShader brainShader;
 	vector<int> vecIdxSpread{ 0 };
 #endif // DS_BRAINGLOW
 
 	ofxAssimpModelLoader humanoidModel;
 	ofVboMesh humanoidMesh;
+	ofTexture humanoidTex;
 	shared_ptr<ofShader> humanoidShader;
 	bool isShaderDirty;
 #ifdef DS_FLOWFIELD

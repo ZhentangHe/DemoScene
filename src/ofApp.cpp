@@ -20,13 +20,18 @@ void ofApp::setup() {
 #endif // DS_FLOWFIELD
 
 #ifdef DS_BRAINGLOW
+
 	light.setPosition(0, 0, 300);
 	//cam.setAutoDistance(false);
 	brainGlow.init("brainmesh_3000_corrected.DAE");
+	brainShader.load("brainshader");
 
 #endif // DS_BRAINGLOW
+	ofDisableArbTex();
+	ofLoadImage(humanoidTex, "Zhentang4.jpg");
+
 	isShaderDirty = true;
-	humanoidModel.loadModel("Zhentang4.fbx");
+	humanoidModel.loadModel("Zhentang4_20000f.fbx");
 
 	humanoidMesh = humanoidModel.getMesh(0);
 	
@@ -89,15 +94,26 @@ void ofApp::draw() {
 	brainGlow.getMesh().drawWireframe();
 	ofPopMatrix();
 
+	//ofPushMatrix();
+	//ofTranslate(100, -100);
+	//ofScale(2.5);
+	//humanoidTex.bind();
+	//humanoidMesh.draw();
+	//humanoidTex.unbind();
+	//ofPopMatrix();
+
+	int iCount = 4;
 	humanoidShader->begin();
-	humanoidShader->setUniform4f("globalColor", 1.0, 0.4, 0.1, 1.0);
+	humanoidShader->setUniform4f("globalColor", 1.0, 0.4, 0.5, 1.0);
+	humanoidShader->setUniform1i("iCount", iCount);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 	ofPushMatrix();
-	ofTranslate(100, -100);
+	//ofRotateX(30);
+	ofTranslate(0, 0, 500);
 	ofScale(2.5);
 	//humanoidMesh.draw();
-	humanoidMesh.drawInstanced(OF_MESH_FILL, 12 * 12);
+	humanoidMesh.drawInstanced(OF_MESH_WIREFRAME, iCount * iCount);
 	ofPopMatrix();
 	humanoidShader->end();
 
