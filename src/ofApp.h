@@ -3,21 +3,18 @@
 #include "ofMain.h"
 #include "ofxAssimpModelLoader.h"
 
-//#define DS_FLOWFIELD
-#define DS_BRAINGLOW
-
 #ifdef DS_FLOWFIELD
 #include "FlowParticle.h"
 #endif // DS_FLOWFIELD
 
-#ifdef DS_BRAINGLOW
 #include "BrainGlow.h"
-#endif // DS_BRAINGLOW
-
+#include "DemoCam.h"
 
 class ofApp : public ofBaseApp {
 
 public:
+	ofApp() : cam(ofVec3f(-80, 150, 2000), ofVec3f(-50, 150, 2050)) {}
+
 	void setup();
 	void update();
 	void draw();
@@ -35,21 +32,20 @@ public:
 	void gotMessage(ofMessage msg);
 
 private:
-	ofEasyCam cam;
+	DemoCam cam;
 	ofLight light;
 
-#ifdef DS_BRAINGLOW
 	const int interval = 30;
 	BrainGlow brainGlow;
 	ofShader brainShader;
 	vector<int> vecIdxSpread{ 0 };
-#endif // DS_BRAINGLOW
 
 	ofxAssimpModelLoader humanoidModel;
 	ofVboMesh humanoidMesh;
 	ofTexture humanoidTex;
 	shared_ptr<ofShader> humanoidShader;
 	bool isShaderDirty;
+
 #ifdef DS_FLOWFIELD
 	ofShader fpShader;
 	std::vector<std::shared_ptr<FlowParticle>> fpList;

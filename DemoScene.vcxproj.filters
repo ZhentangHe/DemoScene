@@ -73,10 +73,10 @@
     <ClCompile Include="src\FlowParticle.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\DemoManager.cpp">
+    <ClCompile Include="src\BrainGlow.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\BrainGlow.cpp">
+    <ClCompile Include="src\DemoCam.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1322,10 +1322,10 @@
     <ClInclude Include="src\FlowParticle.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\DemoManager.h">
+    <ClInclude Include="src\BrainGlow.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\BrainGlow.h">
+    <ClInclude Include="src\DemoCam.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

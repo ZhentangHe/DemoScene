@@ -19,14 +19,12 @@ void ofApp::setup() {
 	makeFlowParticles();
 #endif // DS_FLOWFIELD
 
-#ifdef DS_BRAINGLOW
 
 	light.setPosition(0, 0, 300);
 	//cam.setAutoDistance(false);
 	brainGlow.init("brainmesh_3000_corrected.DAE");
-	brainShader.load("brainshader");
+	//brainShader.load("brainshader");
 
-#endif // DS_BRAINGLOW
 	ofDisableArbTex();
 	ofLoadImage(humanoidTex, "Zhentang4.jpg");
 
@@ -34,25 +32,27 @@ void ofApp::setup() {
 	humanoidModel.loadModel("Zhentang4_20000f.fbx");
 
 	humanoidMesh = humanoidModel.getMesh(0);
-	
+
 }
 
 //--------------------------------------------------------------
 void ofApp::update() {
-#ifdef DS_BRAINGLOW
-	if (ofGetFrameNum() % interval == 0 && !vecIdxSpread.empty()) {
-		vecIdxSpread = brainGlow.spread(vecIdxSpread);
-	}
-	else {
-		//haven't figure out how this works
-		float prop = (float)(ofGetFrameNum() % interval) / 30.;
+	cam.update();
+	if (ofGetFrameNum() > 600) {
+		if (ofGetFrameNum() % interval == 0 && !vecIdxSpread.empty()) {
+			vecIdxSpread = brainGlow.spread(vecIdxSpread);
+		}
+		else {
+			//haven't figure out how this works
+			float prop = (float)(ofGetFrameNum() % interval) / 30.;
+		}
 	}
 
 	//float prop = ofMap(ofGetElapsedTimeMillis() % 1000, 0, 10000, 0, 1);
 	//heyPos = testMesh.getVertex(indexVertex) * prop + testMesh.getVertex(indexVertex + 1) * (1 - prop);
 	//if (prop > 1)
 	//	indexVertex++;
-#endif // DS_BRAINGLOW
+
 	if (isShaderDirty) {
 		ofLogNotice() << "Reloading Shader.";
 		humanoidShader = shared_ptr<ofShader>(new ofShader());
@@ -64,7 +64,7 @@ void ofApp::update() {
 	
 		isShaderDirty = false;
 	}
-
+	//vector<ofVec3f> test{ {1,2,3},{3,4,5} };
 #ifdef DS_FLOWFIELD
 	for (auto fp : fpList) {
 		fp->update();
@@ -83,16 +83,18 @@ void ofApp::update() {
 
 //--------------------------------------------------------------
 void ofApp::draw() {
-#ifdef DS_BRAINGLOW
+
 	light.enable();
 	cam.begin();
-	ofPushMatrix();
-	ofTranslate(75, -150);
-	ofScale(7.5);
-	ofRotateXDeg(-90);
-	ofRotateZDeg(90);
-	brainGlow.getMesh().drawWireframe();
-	ofPopMatrix();
+	if (ofGetFrameNum() > 0) {
+		ofPushMatrix();
+		ofTranslate(75, -50, 500);
+		ofScale(7.5);
+		ofRotateXDeg(-90);
+		ofRotateZDeg(90);
+		brainGlow.getMesh().drawWireframe();
+		ofPopMatrix();
+	}
 
 	//ofPushMatrix();
 	//ofTranslate(100, -100);
@@ -102,7 +104,7 @@ void ofApp::draw() {
 	//humanoidTex.unbind();
 	//ofPopMatrix();
 
-	int iCount = 4;
+	int iCount = 12;
 	humanoidShader->begin();
 	humanoidShader->setUniform4f("globalColor", 1.0, 0.4, 0.5, 1.0);
 	humanoidShader->setUniform1i("iCount", iCount);
@@ -113,7 +115,7 @@ void ofApp::draw() {
 	ofTranslate(0, 0, 500);
 	ofScale(2.5);
 	//humanoidMesh.draw();
-	humanoidMesh.drawInstanced(OF_MESH_WIREFRAME, iCount * iCount);
+	humanoidMesh.drawInstanced(OF_MESH_FILL, iCount * iCount);
 	ofPopMatrix();
 	humanoidShader->end();
 
@@ -137,8 +139,6 @@ void ofApp::draw() {
 
 	cam.end();
 	light.disable();
-#endif // DS_BRAINGLOW
-
 
 #ifdef DS_FLOWFIELD
 	light.enable();
